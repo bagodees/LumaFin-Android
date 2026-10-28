@@ -32,7 +32,7 @@
     <string name="home_recent_movies">Recently Added Movies</string>
     <string name="home_recent_shows">Recently Added Shows</string>
     <string name="home_empty">Nothing here yet. Add some movies or shows to your server.</string>
-    <string name="home_failed">Couldn\'t load Home. Pull down to try again.</string>
+    <string name="home_failed">Couldn\'t load Home. Pull down to try again. Your downloads play without a connection in the Downloads tab.</string>
 
     <string name="coming_soon">Coming in the next step of the phone app.</string>
 

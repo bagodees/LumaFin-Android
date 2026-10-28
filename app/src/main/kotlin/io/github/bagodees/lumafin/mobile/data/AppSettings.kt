@@ -15,4 +15,14 @@ class AppSettings(context: Context) {
 	var autoplayNext: Boolean
 		get() = prefs.getBoolean("autoplay_next", true)
 		set(value) = prefs.edit().putBoolean("autoplay_next", value).apply()
+
+	/** Downloads wait for Wi-Fi instead of using mobile data. */
+	var downloadWifiOnly: Boolean
+		get() = prefs.getBoolean("download_wifi_only", true)
+		set(value) = prefs.edit().putBoolean("download_wifi_only", value).apply()
+
+	/** The quality picked for the last download, offered first next time. */
+	var downloadQuality: DownloadQuality
+		get() = runCatching { DownloadQuality.valueOf(prefs.getString("download_quality", null).orEmpty()) }.getOrDefault(DownloadQuality.ORIGINAL)
+		set(value) = prefs.edit().putString("download_quality", value.name).apply()
 }

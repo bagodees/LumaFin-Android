@@ -37,6 +37,8 @@ import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import io.github.bagodees.lumafin.mobile.LumaFinApplication
 import io.github.bagodees.lumafin.mobile.R
+import io.github.bagodees.lumafin.mobile.data.Download
+import io.github.bagodees.lumafin.mobile.data.DownloadStatus
 import io.github.bagodees.lumafin.mobile.data.PlaybackSource
 import io.github.bagodees.lumafin.mobile.data.playbackSource
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +46,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.jellyfin.sdk.api.client.ApiClient
 import org.jellyfin.sdk.api.client.extensions.playStateApi
 import org.jellyfin.sdk.api.client.extensions.tvShowsApi
@@ -58,6 +61,7 @@ import org.jellyfin.sdk.model.api.RepeatMode
 import org.jellyfin.sdk.model.api.request.GetNextUpRequest
 import org.jellyfin.sdk.model.serializer.toUUIDOrNull
 import timber.log.Timber
+import java.io.File
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -79,6 +83,8 @@ class PlayerActivity : ComponentActivity() {
 	private var progressJob: Job? = null
 	private var stopReported = true
 	private var converted = false
+	/** The download playing, when playing from this device instead of the server. */
+	private var local: Download? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -99,6 +105,10 @@ class PlayerActivity : ComponentActivity() {
 			// A file the device turns out not to decode is converted by the server instead, from the same spot
 			override fun onPlayerError(error: PlaybackException) {
 				Timber.w(error, "Playback error")
+				if (local != null) {
+					Toast.makeText(this@PlayerActivity, R.string.player_failed, Toast.LENGTH_LONG).show()
+					return finish()
+				}
 				val item = item ?: return
 				if (converted) {
 					Toast.makeText(this@PlayerActivity, R.string.player_failed, Toast.LENGTH_LONG).show()
@@ -147,7 +157,39 @@ class PlayerActivity : ComponentActivity() {
 		})
 		hideSystemBars()
 		watchFold()
-		play(itemId)
+		if (intent.getBooleanExtra(EXTRA_OFFLINE, false)) playDownload(itemId) else play(itemId)
+	}
+
+	/** Plays a download from this device; works without a connection. */
+	private fun playDownload(itemId: UUID) {
+		val downloads = (application as LumaFinApplication).downloads
+		val download = downloads.find(itemId)?.takeIf { it.status == DownloadStatus.DONE } ?: return finish()
+		lifecycleScope.launch {
+			// The server's resume point, if it answers quickly and nothing newer from this device is waiting to be sent
+			val serverData = if (download.unsynced) null else withTimeoutOrNull(3.seconds) {
+				withContext(Dispatchers.IO) { runCatching { api.userLibraryApi.getItem(itemId).content.userData }.getOrNull() }
+			}
+			val ticks = serverData?.let { if (it.played) 0 else it.playbackPositionTicks } ?: download.positionTicks
+			local = download
+			item = null
+			source = null
+			tabletopTitle.text = download.title
+			val media = MediaItem.Builder()
+				.setUri(Uri.fromFile(File(download.file)))
+				.setSubtitleConfigurations(download.subtitles.map {
+					MediaItem.SubtitleConfiguration.Builder(Uri.fromFile(File(it.path))).setMimeType(MimeTypes.APPLICATION_SUBRIP).setLanguage(it.language).setLabel(it.label).build()
+				})
+				.build()
+			player.setMediaItem(media, ticks / 10_000)
+			player.prepare()
+			player.playWhenReady = true
+		}
+	}
+
+	/** Keeps a download's resume point, and sends it to the server when it can be reached. */
+	private fun saveLocal(played: Boolean = false) {
+		val download = local ?: return
+		(application as LumaFinApplication).downloads.savePosition(api, download.itemId, positionTicks(), played)
 	}
 
 	private fun hideSystemBars() {
@@ -220,6 +262,7 @@ class PlayerActivity : ComponentActivity() {
 	private fun positionTicks() = player.currentPosition.coerceAtLeast(0) * 10_000
 
 	private fun reportProgress() {
+		if (local != null && !player.isPlaying) saveLocal()
 		val item = item ?: return
 		val source = source ?: return
 		if (stopReported) return
@@ -233,6 +276,7 @@ class PlayerActivity : ComponentActivity() {
 	}
 
 	private fun reportStopped() {
+		if (local != null) saveLocal()
 		val item = item ?: return
 		val source = source ?: return
 		if (stopReported) return
@@ -252,6 +296,18 @@ class PlayerActivity : ComponentActivity() {
 
 	/** At the end of an episode, the next one starts when Autoplay is on. */
 	private fun onEnded() {
+		local?.let { download ->
+			saveLocal(played = true)
+			local = null
+			val application = application as LumaFinApplication
+			// The next downloaded episode of the same show, when Autoplay is on
+			val next = if (!download.isEpisode || !application.settings.autoplayNext) null else application.downloads.downloads.value
+				.filter { it.seriesId == download.seriesId && it.status == DownloadStatus.DONE }
+				.sortedWith(compareBy({ it.seasonNumber ?: 0 }, { it.episodeNumber ?: 0 }))
+				.firstOrNull { (it.seasonNumber ?: 0) > (download.seasonNumber ?: 0) || ((it.seasonNumber ?: 0) == (download.seasonNumber ?: 0) && (it.episodeNumber ?: 0) > (download.episodeNumber ?: 0)) }
+			if (next == null) finish() else playDownload(next.itemId)
+			return
+		}
 		val finished = item ?: return finish()
 		reportStopped()
 		val application = application as LumaFinApplication
@@ -299,7 +355,11 @@ class PlayerActivity : ComponentActivity() {
 
 	companion object {
 		private const val EXTRA_ITEM = "item"
+		private const val EXTRA_OFFLINE = "offline"
 
-		fun intent(context: Context, itemId: UUID) = Intent(context, PlayerActivity::class.java).putExtra(EXTRA_ITEM, itemId.toString())
+		/** Streams [itemId] from the server, or with [offline] plays its download from this device. */
+		fun intent(context: Context, itemId: UUID, offline: Boolean = false) = Intent(context, PlayerActivity::class.java)
+			.putExtra(EXTRA_ITEM, itemId.toString())
+			.putExtra(EXTRA_OFFLINE, offline)
 	}
 }

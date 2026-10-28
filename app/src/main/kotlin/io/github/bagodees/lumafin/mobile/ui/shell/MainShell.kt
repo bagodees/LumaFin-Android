@@ -1,6 +1,13 @@
 package io.github.bagodees.lumafin.mobile.ui.shell
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -11,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -24,7 +32,9 @@ import io.github.bagodees.lumafin.mobile.ui.common.Route
 import io.github.bagodees.lumafin.mobile.ui.common.WidthClass
 import io.github.bagodees.lumafin.mobile.ui.common.currentWidth
 import io.github.bagodees.lumafin.mobile.ui.common.widthClassFor
+import io.github.bagodees.lumafin.mobile.ui.cast.CastBar
 import io.github.bagodees.lumafin.mobile.ui.details.DetailsScreen
+import io.github.bagodees.lumafin.mobile.ui.downloads.DownloadsScreen
 import io.github.bagodees.lumafin.mobile.ui.home.HomeScreen
 import io.github.bagodees.lumafin.mobile.ui.library.LibrariesScreen
 import io.github.bagodees.lumafin.mobile.ui.library.LibraryScreen
@@ -37,6 +47,7 @@ enum class Destination(val label: Int, val icon: Int) {
 	HOME(R.string.nav_home, R.drawable.ic_house),
 	SEARCH(R.string.nav_search, R.drawable.ic_search),
 	LIBRARIES(R.string.nav_libraries, R.drawable.ic_grid),
+	DOWNLOADS(R.string.nav_downloads, R.drawable.ic_download),
 	SETTINGS(R.string.nav_settings, R.drawable.ic_settings),
 }
 
@@ -59,9 +70,10 @@ fun MainShell(application: LumaFinApplication) {
 	// Back on another tab returns to Home before leaving the app
 	BackHandler(enabled = navigator.stack.isEmpty() && selected != Destination.HOME) { selected = Destination.HOME }
 
+	val layout = navigationFor(currentWidth())
 	CompositionLocalProvider(LocalNavigator provides navigator) {
 		NavigationSuiteScaffold(
-			layoutType = navigationFor(currentWidth()),
+			layoutType = layout,
 			navigationSuiteItems = {
 				Destination.entries.forEach { destination ->
 					item(
@@ -77,17 +89,28 @@ fun MainShell(application: LumaFinApplication) {
 				}
 			},
 		) {
-			when (val page = navigator.stack.lastOrNull()) {
-				is Route.Item -> DetailsScreen(application, page)
-				is Route.Library -> LibraryScreen(application, page)
-				is Route.Seerr -> SeerrScreen(application, page)
-				is Route.Person -> PersonScreen(application, page)
-				null -> when (selected) {
-					Destination.HOME -> HomeScreen(application)
-					Destination.SEARCH -> SearchScreen(application)
-					Destination.LIBRARIES -> LibrariesScreen(application)
-					Destination.SETTINGS -> SettingsScreen(application)
+			Column {
+				Box(Modifier.weight(1f)) {
+					when (val page = navigator.stack.lastOrNull()) {
+						is Route.Item -> DetailsScreen(application, page)
+						is Route.Library -> LibraryScreen(application, page)
+						is Route.Seerr -> SeerrScreen(application, page)
+						is Route.Person -> PersonScreen(application, page)
+						null -> when (selected) {
+							Destination.HOME -> HomeScreen(application)
+							Destination.SEARCH -> SearchScreen(application)
+							Destination.LIBRARIES -> LibrariesScreen(application)
+							Destination.DOWNLOADS -> DownloadsScreen(application)
+							Destination.SETTINGS -> SettingsScreen(application)
+						}
+					}
 				}
+				// Remote controls while a title plays on another screen
+				// With a side rail nothing sits below the bar, so it keeps clear of the gesture bar itself
+				CastBar(
+					application,
+					if (layout == NavigationSuiteType.NavigationBar) Modifier else Modifier.windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)),
+				)
 			}
 		}
 	}

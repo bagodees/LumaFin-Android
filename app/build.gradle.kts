@@ -106,6 +106,10 @@ dependencies {
 	implementation(libs.androidx.media3.ui)
 	implementation(libs.jellyfin.androidx.media3.ffmpeg.decoder)
 
+	// Casting to Chromecast and Google TV (needs Google Play services; hidden without them, as on Fire tablets)
+	implementation(libs.play.services.cast.framework)
+	implementation(libs.androidx.mediarouter)
+
 	implementation(libs.timber)
 	// The Jellyfin SDK logs through SLF4J; this sends it to Timber
 	implementation(libs.slf4j.timber)

@@ -51,15 +51,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import io.github.bagodees.lumafin.mobile.LumaFinApplication
 import io.github.bagodees.lumafin.mobile.R
+import io.github.bagodees.lumafin.mobile.data.DownloadStatus
 import io.github.bagodees.lumafin.mobile.data.backdropImage
 import io.github.bagodees.lumafin.mobile.data.landscapeImage
 import io.github.bagodees.lumafin.mobile.data.posterImage
+import io.github.bagodees.lumafin.mobile.ui.cast.CastButton
 import io.github.bagodees.lumafin.mobile.ui.common.CardRow
 import io.github.bagodees.lumafin.mobile.ui.common.ItemCard
 import io.github.bagodees.lumafin.mobile.ui.common.LocalNavigator
 import io.github.bagodees.lumafin.mobile.ui.common.Metrics
 import io.github.bagodees.lumafin.mobile.ui.common.Route
 import io.github.bagodees.lumafin.mobile.ui.common.currentMetrics
+import io.github.bagodees.lumafin.mobile.ui.downloads.DownloadButton
+import io.github.bagodees.lumafin.mobile.ui.downloads.DownloadSeasonButton
 import io.github.bagodees.lumafin.mobile.ui.library.Loading
 import io.github.bagodees.lumafin.mobile.ui.player.PlayerActivity
 import io.github.bagodees.lumafin.mobile.ui.theme.LumaFinColors
@@ -86,10 +90,10 @@ fun DetailsScreen(application: LumaFinApplication, route: Route.Item) {
 			Box(Modifier.fillMaxSize().background(LumaFinColors.Background.copy(alpha = 0.86f)))
 			Row(Modifier.fillMaxSize().safeDrawingPadding()) {
 				LazyColumn(Modifier.weight(0.42f).fillMaxSize(), contentPadding = PaddingValues(start = metrics.gutter, end = 16.dp, top = 24.dp, bottom = 24.dp)) {
-					item { Info(api, item, state, viewModel, showPoster = true) }
+					item { Info(application, api, item, state, viewModel, showPoster = true) }
 				}
 				LazyColumn(Modifier.weight(0.58f).fillMaxSize(), contentPadding = PaddingValues(top = 12.dp, bottom = 24.dp)) {
-					rest(api, item, state, viewModel, metrics)
+					rest(application, api, item, state, viewModel, metrics)
 				}
 			}
 		}
@@ -101,8 +105,8 @@ fun DetailsScreen(application: LumaFinApplication, route: Route.Item) {
 					Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.4f to Color.Transparent, 1f to LumaFinColors.Background)))
 				}
 			}
-			item { Box(Modifier.padding(horizontal = metrics.gutter)) { Info(api, item, state, viewModel, showPoster = false) } }
-			rest(api, item, state, viewModel, metrics)
+			item { Box(Modifier.padding(horizontal = metrics.gutter)) { Info(application, api, item, state, viewModel, showPoster = false) } }
+			rest(application, api, item, state, viewModel, metrics)
 		}
 	}
 }
@@ -118,7 +122,7 @@ private fun infoLine(item: BaseItemDto) = listOfNotNull(
 
 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-private fun Info(api: ApiClient, item: BaseItemDto, state: DetailsState, viewModel: DetailsViewModel, showPoster: Boolean) {
+private fun Info(application: LumaFinApplication, api: ApiClient, item: BaseItemDto, state: DetailsState, viewModel: DetailsViewModel, showPoster: Boolean) {
 	val context = LocalContext.current
 	val navigator = LocalNavigator.current
 	var expanded by rememberSaveable(item.id) { mutableStateOf(false) }
@@ -150,7 +154,11 @@ private fun Info(api: ApiClient, item: BaseItemDto, state: DetailsState, viewMod
 		val playTarget = if (item.type == BaseItemKind.SERIES || item.type == BaseItemKind.SEASON) state.nextEpisode ?: state.episodes.firstOrNull() else item
 		val resumeTicks = playTarget?.userData?.playbackPositionTicks ?: 0
 		androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 16.dp)) {
-			if (playTarget != null && item.type != BaseItemKind.BOX_SET) Button(onClick = { context.startActivity(PlayerActivity.intent(context, playTarget.id)) }) {
+			// While casting, Play sends the title to the other screen
+			if (playTarget != null && item.type != BaseItemKind.BOX_SET) Button(onClick = {
+				val api = application.sessions.api
+				if (api == null || !application.cast.playOnCurrent(api, playTarget)) context.startActivity(PlayerActivity.intent(context, playTarget.id))
+			}) {
 				Icon(painterResource(R.drawable.ic_play), contentDescription = null, modifier = Modifier.size(18.dp))
 				Text(
 					when {
@@ -161,6 +169,8 @@ private fun Info(api: ApiClient, item: BaseItemDto, state: DetailsState, viewMod
 					modifier = Modifier.padding(start = 6.dp),
 				)
 			}
+			if (playTarget != null && item.type != BaseItemKind.BOX_SET) CastButton(application, playTarget)
+			if (item.type == BaseItemKind.MOVIE || item.type == BaseItemKind.EPISODE) DownloadButton(application, item)
 			OutlinedButton(onClick = viewModel::toggleWatched) {
 				Text(stringResource(if (item.userData?.played == true) R.string.details_mark_unwatched else R.string.details_mark_watched))
 			}
@@ -183,7 +193,7 @@ private fun Info(api: ApiClient, item: BaseItemDto, state: DetailsState, viewMod
 	}
 }
 
-private fun LazyListScope.rest(api: ApiClient, item: BaseItemDto, state: DetailsState, viewModel: DetailsViewModel, metrics: Metrics) {
+private fun LazyListScope.rest(application: LumaFinApplication, api: ApiClient, item: BaseItemDto, state: DetailsState, viewModel: DetailsViewModel, metrics: Metrics) {
 	val seriesId = if (item.type == BaseItemKind.SERIES) item.id else item.seriesId
 	if (state.seasons.isNotEmpty() && seriesId != null) {
 		item(key = "seasons") {
@@ -204,7 +214,10 @@ private fun LazyListScope.rest(api: ApiClient, item: BaseItemDto, state: Details
 				}
 			}
 		}
-		items(state.episodes, key = { "episode-${it.id}" }) { episode -> EpisodeRow(api, episode, metrics) }
+		if (state.episodes.isNotEmpty()) item(key = "download-season") {
+			DownloadSeasonButton(application, state.episodes, Modifier.padding(horizontal = metrics.gutter - 12.dp))
+		}
+		items(state.episodes, key = { "episode-${it.id}" }) { episode -> EpisodeRow(application, api, episode, metrics) }
 	}
 	val cast = item.people.orEmpty().filter { it.type == PersonKind.ACTOR || it.type == PersonKind.GUEST_STAR }.take(24)
 	if (cast.isNotEmpty()) item(key = "cast") {
@@ -218,7 +231,9 @@ private fun LazyListScope.rest(api: ApiClient, item: BaseItemDto, state: Details
 }
 
 @Composable
-private fun EpisodeRow(api: ApiClient, episode: BaseItemDto, metrics: Metrics) {
+private fun EpisodeRow(application: LumaFinApplication, api: ApiClient, episode: BaseItemDto, metrics: Metrics) {
+	val downloads by application.downloads.downloads.collectAsState()
+	val downloaded = downloads.any { it.itemId == episode.id && it.status == DownloadStatus.DONE }
 	val navigator = LocalNavigator.current
 	val context = LocalContext.current
 	Row(
@@ -226,7 +241,7 @@ private fun EpisodeRow(api: ApiClient, episode: BaseItemDto, metrics: Metrics) {
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		Box(Modifier.width(150.dp).aspectRatio(16f / 9f).clip(RoundedCornerShape(10.dp)).background(LumaFinColors.Raised).clickable {
-			context.startActivity(PlayerActivity.intent(context, episode.id))
+			if (!application.cast.playOnCurrent(api, episode)) context.startActivity(PlayerActivity.intent(context, episode.id))
 		}) {
 			AsyncImage(model = api.landscapeImage(episode, 400), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
 			Icon(
@@ -247,7 +262,11 @@ private fun EpisodeRow(api: ApiClient, episode: BaseItemDto, metrics: Metrics) {
 			)
 			val minutes = episode.runTimeTicks?.div(600_000_000L)
 			Text(
-				listOfNotNull(minutes?.takeIf { it > 0 }?.let { "${it}m" }, if (episode.userData?.played == true) stringResource(R.string.details_watched) else null).joinToString(" · "),
+				listOfNotNull(
+					minutes?.takeIf { it > 0 }?.let { "${it}m" },
+					if (episode.userData?.played == true) stringResource(R.string.details_watched) else null,
+					if (downloaded) stringResource(R.string.download_downloaded) else null,
+				).joinToString(" · "),
 				style = MaterialTheme.typography.bodySmall,
 				color = MaterialTheme.colorScheme.onSurfaceVariant,
 			)

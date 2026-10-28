@@ -45,6 +45,7 @@ fun SettingsScreen(application: LumaFinApplication) {
 	val scope = rememberCoroutineScope()
 	var seerrRows by remember { mutableStateOf(settings.seerrRows) }
 	var autoplay by remember { mutableStateOf(settings.autoplayNext) }
+	var wifiOnly by remember { mutableStateOf(settings.downloadWifiOnly) }
 	Box(Modifier.fillMaxSize().safeDrawingPadding(), contentAlignment = Alignment.TopCenter) {
 		Column(Modifier.widthIn(max = 640.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(24.dp)) {
 			Text(stringResource(R.string.nav_settings), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
@@ -67,6 +68,9 @@ fun SettingsScreen(application: LumaFinApplication) {
 				}
 				Toggle(stringResource(R.string.settings_seerr), stringResource(R.string.settings_seerr_description), seerrRows) {
 					seerrRows = it; settings.seerrRows = it
+				}
+				Toggle(stringResource(R.string.settings_download_wifi_only), stringResource(R.string.settings_download_wifi_only_description), wifiOnly) {
+					wifiOnly = it; settings.downloadWifiOnly = it
 				}
 			}
 			Text(

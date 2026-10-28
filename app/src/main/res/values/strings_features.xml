@@ -65,4 +65,51 @@
         <item quantity="one">%1$d episode</item>
         <item quantity="other">%1$d episodes</item>
     </plurals>
+
+    <!-- Downloads -->
+    <string name="nav_downloads">Downloads</string>
+    <string name="download">Download</string>
+    <string name="download_season">Download season</string>
+    <string name="download_choose_quality">Download quality</string>
+    <string name="download_quality_original">Original</string>
+    <string name="download_quality_high">1080p</string>
+    <string name="download_quality_medium">720p</string>
+    <string name="download_quality_low">480p</string>
+    <string name="download_quality_original_detail">The file as it is on your server. Best picture, every audio and subtitle track.</string>
+    <string name="download_quality_converted_detail">A smaller copy your server converts while it downloads. Main audio track only.</string>
+    <string name="download_size">About %1$s</string>
+    <string name="download_started">Downloading %1$s</string>
+    <string name="download_failed_start">Couldn\'t start the download. Check your connection and try again.</string>
+    <string name="download_not_allowed">Downloads are turned off for your account. A server admin can allow them in the Jellyfin dashboard.</string>
+    <string name="download_status_queued">Waiting to start</string>
+    <string name="download_status_wifi">Waiting for Wi-Fi</string>
+    <string name="download_status_progress">Downloading · %1$s of %2$s</string>
+    <string name="download_status_progress_unknown">Downloading · %1$s</string>
+    <string name="download_status_failed">Download failed</string>
+    <string name="download_status_done">Downloaded · %1$s</string>
+    <string name="download_downloaded">Downloaded</string>
+    <string name="download_downloading">Downloading</string>
+    <string name="download_delete">Delete download</string>
+    <string name="download_delete_confirm">Delete %1$s from this device? It stays on your server.</string>
+    <string name="download_retry">Try again</string>
+    <string name="downloads_empty">Nothing downloaded yet. Open a movie or episode and tap Download to watch it without a connection.</string>
+    <string name="settings_download_wifi_only">Download only on Wi-Fi</string>
+    <string name="settings_download_wifi_only_description">Downloads wait for Wi-Fi instead of using mobile data. Applies to new downloads.</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+
+    <!-- Casting -->
+    <string name="casting">Play on</string>
+    <string name="casting_choose_device">Play on another screen</string>
+    <string name="casting_searching">Looking for devices…</string>
+    <string name="casting_none">No devices found. Chromecasts need to be on the same Wi-Fi as this device, and Jellyfin apps need to be open and signed in to your account.</string>
+    <string name="casting_no_chromecast">Chromecast isn\'t available on this device. Jellyfin apps signed in to your account still show here.</string>
+    <string name="casting_chromecast">Chromecast</string>
+    <string name="casting_playing_on">Playing on %1$s</string>
+    <string name="casting_connected_to">Connected to %1$s</string>
+    <string name="casting_failed">Couldn\'t play on %1$s.</string>
+    <string name="casting_play_pause">Play or pause</string>
+    <string name="casting_back_10">Back 10 seconds</string>
+    <string name="casting_forward_30">Forward 30 seconds</string>
+    <string name="casting_stop">Stop casting</string>
 </resources>
