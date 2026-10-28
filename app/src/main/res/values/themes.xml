@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Dark from the first frame, so there's no white flash before Compose draws -->
     <style name="Theme.LumaFin" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/lumafin_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+    <style name="Theme.LumaFin.Player" parent="Theme.LumaFin">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
     </style>
 </resources>

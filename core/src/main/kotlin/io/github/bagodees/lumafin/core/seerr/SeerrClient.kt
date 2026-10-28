@@ -93,8 +93,13 @@ object SeerrClient {
 	private fun ApiClient.absolute(url: String?) =
 		url?.takeIf { it.isNotBlank() }?.let { if (it.startsWith("/")) baseUrl?.trimEnd('/') + it else it }
 
-	suspend fun discover(api: ApiClient, path: String): List<SeerrItem>? = try {
-		val response = get(api, path, mapOf("limit" to 20))
+	suspend fun discover(api: ApiClient, path: String): List<SeerrItem>? = items(api, path, mapOf("limit" to 20))
+
+	/** Titles Seerr finds for [query], for adding to search results; empty without SeerrFin. */
+	suspend fun search(api: ApiClient, query: String): List<SeerrItem> = items(api, "search", mapOf("query" to query)).orEmpty()
+
+	private suspend fun items(api: ApiClient, path: String, query: Map<String, Any?>): List<SeerrItem>? = try {
+		val response = get(api, path, query)
 		if (response.status !in 200..299) null
 		else json.decodeFromString(BaseItemDtoQueryResult.serializer(), response.body.decodeToString()).items.mapNotNull { item ->
 			val ids = item.providerIds.orEmpty()

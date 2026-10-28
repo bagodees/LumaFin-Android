@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Libraries -->
+    <string name="sort_name">A–Z</string>
+    <string name="sort_added">Recently Added</string>
+    <string name="sort_released">Newest</string>
+    <string name="sort_top_rated">Top Rated</string>
+
+    <!-- Title pages -->
+    <string name="details_play">Play</string>
+    <string name="details_resume">Resume</string>
+    <string name="details_play_episode">Play S%1$d E%2$d</string>
+    <string name="details_mark_watched">Mark watched</string>
+    <string name="details_mark_unwatched">Mark unwatched</string>
+    <string name="details_watched">Watched</string>
+    <string name="details_cast">Cast</string>
+    <string name="details_more_like_this">More Like This</string>
+
+    <!-- Search -->
+    <string name="search_hint">Movies, shows and episodes</string>
+    <string name="search_not_in_library">Not in your library yet</string>
+    <string name="search_nothing">Nothing found. Try a shorter or different word.</string>
+
+    <!-- Player -->
+    <string name="player_failed">Couldn\'t play this title.</string>
+
+    <!-- Settings -->
+    <string name="settings_autoplay">Play the next episode</string>
+    <string name="settings_autoplay_description">When an episode ends, the next one starts.</string>
+    <string name="settings_seerr">Seerr rows and requests</string>
+    <string name="settings_seerr_description">Needs the SeerrFin plugin on your Jellyfin server. Shows My Requests, Trending and Upcoming on Home, Seerr titles in Search, and requests for missing seasons.</string>
+
+    <!-- Seerr (through the SeerrFin plugin) -->
+    <string name="seerr_my_requests">My Requests</string>
+    <string name="seerr_trending_movies">Trending Movies</string>
+    <string name="seerr_trending_shows">Trending Shows</string>
+    <string name="seerr_upcoming_movies">Upcoming Movies</string>
+    <string name="seerr_upcoming_shows">Upcoming Shows</string>
+    <string name="seerr_status_downloading">Downloading · %1$d%%</string>
+    <string name="seerr_status_waiting">Waiting to download</string>
+    <string name="seerr_status_unreleased">Not released yet</string>
+    <string name="seerr_status_failed">Couldn\'t be found</string>
+    <string name="seerr_status_in_library">In your library</string>
+    <string name="seerr_status_arriving">Downloaded, arriving soon</string>
+    <string name="seerr_status_partly_in_library">Partly in your library</string>
+    <string name="seerr_status_awaiting_approval">Waiting for approval</string>
+    <string name="seerr_status_declined">Declined</string>
+    <string name="seerr_status_requested">Requested</string>
+    <string name="seerr_status_requested_long">Already requested. It will appear in your library once it\'s added.</string>
+    <string name="seerr_request">Request</string>
+    <string name="seerr_request_missing_seasons">Request missing seasons</string>
+    <string name="seerr_request_movie_detail">Not in your library yet. Request it through Seerr?</string>
+    <string name="seerr_choose_seasons">Choose the seasons to request through Seerr.</string>
+    <string name="seerr_choose_missing_seasons">These seasons aren\'t in your library yet. Choose the ones to request through Seerr.</string>
+    <string name="seerr_season">Season %1$d</string>
+    <string name="seerr_requested">Requested %1$s</string>
+    <string name="seerr_request_failed">Couldn\'t request %1$s. Check that your account can make requests in Seerr.</string>
+    <string name="seerr_open_in_library">Open in library</string>
+    <string name="seerr_trailer">Trailer</string>
+    <string name="seerr_trailer_failed">Couldn\'t open the trailer.</string>
+    <string name="seerr_directed_by">Directed by %1$s</string>
+    <string name="seerr_created_by">Created by %1$s</string>
+    <string name="seerr_details_failed">Couldn\'t load this title from Seerr.</string>
+    <plurals name="episodes">
+        <item quantity="one">%1$d episode</item>
+        <item quantity="other">%1$d episodes</item>
+    </plurals>
+</resources>

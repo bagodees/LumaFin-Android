@@ -36,3 +36,7 @@ fun ApiClient.posterImage(item: BaseItemDto, maxWidth: Int = 400): String? {
 	}
 	return item.imageTags?.get(ImageType.PRIMARY)?.let { image(item.id, ImageType.PRIMARY, it, maxWidth) }
 }
+
+/** The item's own main image at its own shape: library covers, people, seasons. */
+fun ApiClient.primaryImage(item: BaseItemDto, maxWidth: Int = 400): String? =
+	item.imageTags?.get(ImageType.PRIMARY)?.let { image(item.id, ImageType.PRIMARY, it, maxWidth) }

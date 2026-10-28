@@ -86,6 +86,13 @@ dependencies {
 	implementation(libs.androidx.compose.material3.navigation.suite)
 	implementation(libs.androidx.compose.material3.adaptive)
 	implementation(libs.bundles.coil)
+	implementation(libs.androidx.window)
+
+	// Video
+	implementation(libs.androidx.media3.exoplayer)
+	implementation(libs.androidx.media3.exoplayer.hls)
+	implementation(libs.androidx.media3.ui)
+	implementation(libs.jellyfin.androidx.media3.ffmpeg.decoder)
 
 	implementation(libs.timber)
 	// The Jellyfin SDK logs through SLF4J; this sends it to Timber
