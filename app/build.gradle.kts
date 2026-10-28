@@ -71,6 +71,7 @@ android {
 base.archivesName.set("LumaFin-Mobile-v${android.defaultConfig.versionName}")
 
 dependencies {
+	implementation(projects.core)
 	implementation(projects.design)
 	implementation(libs.jellyfin.sdk)
 
