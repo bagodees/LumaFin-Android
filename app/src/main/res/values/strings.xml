@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LumaFin</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_libraries">Libraries</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="signin_welcome">Welcome to LumaFin</string>
+    <string name="signin_server_hint">Enter your Jellyfin server address to get started.</string>
+    <string name="signin_server_address">Server address</string>
+    <string name="signin_server_example">For example jellyfin.example.com or 192.168.1.20:8096</string>
+    <string name="signin_connect">Connect</string>
+    <string name="signin_connecting">Connecting…</string>
+    <string name="signin_server_failed">Couldn\'t reach a Jellyfin server at that address. Check it and try again.</string>
+    <string name="signin_who">Who\'s watching?</string>
+    <string name="signin_other_user">Other user</string>
+    <string name="signin_quick_connect">Quick Connect</string>
+    <string name="signin_quick_connect_hint">On a device that\'s already signed in, open Quick Connect in your Jellyfin settings and enter this code.</string>
+    <string name="signin_quick_connect_waiting">Waiting for approval…</string>
+    <string name="signin_quick_connect_unavailable">Quick Connect is turned off on this server. Sign in with a password instead.</string>
+    <string name="signin_username">Username</string>
+    <string name="signin_password">Password</string>
+    <string name="signin_sign_in">Sign in</string>
+    <string name="signin_failed">Wrong username or password.</string>
+    <string name="signin_change_server">Change server</string>
+    <string name="back">Back</string>
+
+    <string name="home_continue_watching">Continue Watching</string>
+    <string name="home_next_up">Next Up</string>
+    <string name="home_recent_movies">Recently Added Movies</string>
+    <string name="home_recent_shows">Recently Added Shows</string>
+    <string name="home_empty">Nothing here yet. Add some movies or shows to your server.</string>
+    <string name="home_failed">Couldn\'t load Home. Pull down to try again.</string>
+
+    <string name="coming_soon">Coming in the next step of the phone app.</string>
+
+    <string name="settings_signed_in_as">Signed in as %1$s</string>
+    <string name="settings_server">Server</string>
+    <string name="settings_sign_out">Sign out</string>
+    <string name="settings_version">Version %1$s</string>
+</resources>
