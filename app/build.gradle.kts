@@ -16,9 +16,10 @@ android {
 		// The same app ID as the TV app: one Play Store and Appstore listing, with a separate build
 		// for phones and tablets (it needs a touchscreen, so TVs never get it, and the TV build needs a TV)
 		applicationId = "io.github.bagodees.lumafin"
-		versionName = "0.1.0"
+		versionName = "1.2.0-alpha.1"
 		// Version codes can't repeat across the two builds, so phone builds start at 1,000,000,000;
-		// TV builds stay far below it (1.2.0 is 1,020,099). 0.1.0 is 1,000,010,000.
+		// TV builds stay far below it (1.2.0 is 1,020,099). The last two digits are the alpha or beta
+		// number and 99 for the final release, so 1.2.0-alpha.1 is 1,001,020,001 and 1.2.0 is 1,001,020,099.
 		versionCode = phoneVersionCode(versionName!!)
 	}
 
@@ -74,7 +75,9 @@ android {
 
 fun phoneVersionCode(version: String): Int {
 	val (major, minor, patch) = version.substringBefore('-').split('.').map { it.toInt() }
-	return 1_000_000_000 + major * 1_000_000 + minor * 10_000 + patch * 100
+	val preRelease = version.substringAfter('-', "").substringAfterLast('.', "").toIntOrNull()
+	require(preRelease == null || preRelease in 1..98) { "Alpha or beta number must be 1 to 98" }
+	return 1_000_000_000 + major * 1_000_000 + minor * 10_000 + patch * 100 + (preRelease ?: 99)
 }
 
 base.archivesName.set("LumaFin-Mobile-v${android.defaultConfig.versionName}")
