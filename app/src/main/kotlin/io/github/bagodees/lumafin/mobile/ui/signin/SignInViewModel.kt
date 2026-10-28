@@ -95,9 +95,16 @@ class SignInViewModel(application: Application) : AndroidViewModel(application) 
 			}
 			_step.value = SignInStep.QuickConnect(server, started.code)
 			// Checks every few seconds until someone approves the code on a signed-in device
+			var failures = 0
 			while (true) {
 				delay(3.seconds)
-				val state = runCatching { withContext(Dispatchers.IO) { api.quickConnectApi.getQuickConnectState(started.secret).content } }.getOrNull() ?: continue
+				val state = runCatching { withContext(Dispatchers.IO) { api.quickConnectApi.getQuickConnectState(started.secret).content } }.getOrNull()
+				if (state == null) {
+					// Codes expire after a few minutes; the server then no longer knows the secret, so get a new code
+					if (++failures >= 2) return@launch startQuickConnect(server)
+					continue
+				}
+				failures = 0
 				if (state.authenticated) {
 					val result = runCatching { withContext(Dispatchers.IO) { api.userApi.authenticateWithQuickConnect(state.secret).content } }.getOrNull()
 					if (result != null && finish(server, result)) return@launch
@@ -117,7 +124,7 @@ class SignInViewModel(application: Application) : AndroidViewModel(application) 
 			is SignInStep.ChooseServer -> current
 			is SignInStep.ChooseUser -> SignInStep.ChooseServer(current.server.url)
 			is SignInStep.Password -> usersStep?.takeIf { it.server == current.server } ?: SignInStep.ChooseServer(current.server.url)
-			is SignInStep.QuickConnect -> usersStep?.takeIf { it.server == current.server } ?: SignInStep.ChooseServer(current.server.url)
+			is SignInStep.QuickConnect -> usersStep?.takeIf { it.server == current.server } ?: SignInStep.Password(current.server, "", fixedUser = false)
 		}
 	}
 

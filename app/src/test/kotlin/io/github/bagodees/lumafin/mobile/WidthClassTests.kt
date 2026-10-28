@@ -19,8 +19,9 @@ class WidthClassTests : FunSpec({
 		widthClassFor(1280.dp) shouldBe WidthClass.EXPANDED // Fire HD 10 in landscape
 	}
 	test("navigation follows the width") {
-		navigationFor(WidthClass.COMPACT) shouldBe NavigationSuiteType.NavigationBar
-		navigationFor(WidthClass.MEDIUM) shouldBe NavigationSuiteType.NavigationRail
-		navigationFor(WidthClass.EXPANDED) shouldBe NavigationSuiteType.NavigationDrawer
+		navigationFor(411.dp) shouldBe NavigationSuiteType.NavigationBar // phone, folded foldable
+		navigationFor(852.dp) shouldBe NavigationSuiteType.NavigationRail // unfolded foldable
+		navigationFor(800.dp) shouldBe NavigationSuiteType.NavigationRail // Fire HD 10 upright
+		navigationFor(1280.dp) shouldBe NavigationSuiteType.NavigationDrawer // Fire HD 10 sideways
 	}
 })

@@ -1,8 +1,7 @@
 package io.github.bagodees.lumafin.mobile.ui.common
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -19,8 +18,12 @@ fun widthClassFor(width: Dp): WidthClass = when {
 	else -> WidthClass.COMPACT
 }
 
+/**
+ * The app window's width. Read from the configuration, which changes on every rotate, fold and
+ * window resize on all Android versions; the window-info size went stale after rotating on Android 9.
+ */
 @Composable
-fun currentWidthClass(): WidthClass {
-	val width = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() }
-	return widthClassFor(width)
-}
+fun currentWidth(): Dp = LocalConfiguration.current.screenWidthDp.dp
+
+@Composable
+fun currentWidthClass(): WidthClass = widthClassFor(currentWidth())

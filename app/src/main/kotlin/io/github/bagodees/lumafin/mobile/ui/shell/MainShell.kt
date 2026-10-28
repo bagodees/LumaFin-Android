@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import io.github.bagodees.lumafin.mobile.LumaFinApplication
 import io.github.bagodees.lumafin.mobile.R
 import io.github.bagodees.lumafin.mobile.ui.common.WidthClass
-import io.github.bagodees.lumafin.mobile.ui.common.currentWidthClass
+import io.github.bagodees.lumafin.mobile.ui.common.currentWidth
+import io.github.bagodees.lumafin.mobile.ui.common.widthClassFor
+import androidx.compose.ui.unit.Dp
 import io.github.bagodees.lumafin.mobile.ui.home.HomeScreen
 import io.github.bagodees.lumafin.mobile.ui.settings.SettingsScreen
 
@@ -33,11 +35,14 @@ enum class Destination(val label: Int, val icon: Int) {
 	SETTINGS(R.string.nav_settings, R.drawable.ic_settings),
 }
 
-/** Bottom tabs on a phone or folded foldable, a side rail on an unfolded foldable, the full side menu on a tablet. */
-fun navigationFor(width: WidthClass) = when (width) {
-	WidthClass.COMPACT -> NavigationSuiteType.NavigationBar
-	WidthClass.MEDIUM -> NavigationSuiteType.NavigationRail
-	WidthClass.EXPANDED -> NavigationSuiteType.NavigationDrawer
+/**
+ * Bottom tabs on a phone or folded foldable, a side rail on an unfolded foldable or a tablet held
+ * upright, and the full side menu only on a wide tablet, where its 360dp still leaves room for Home.
+ */
+fun navigationFor(width: Dp) = when {
+	width >= 1200.dp -> NavigationSuiteType.NavigationDrawer
+	widthClassFor(width) == WidthClass.COMPACT -> NavigationSuiteType.NavigationBar
+	else -> NavigationSuiteType.NavigationRail
 }
 
 @Composable
@@ -46,7 +51,7 @@ fun MainShell(application: LumaFinApplication) {
 	var selected by rememberSaveable { mutableStateOf(Destination.HOME) }
 
 	NavigationSuiteScaffold(
-		layoutType = navigationFor(currentWidthClass()),
+		layoutType = navigationFor(currentWidth()),
 		navigationSuiteItems = {
 			Destination.entries.forEach { destination ->
 				item(
