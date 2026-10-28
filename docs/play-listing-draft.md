@@ -2,7 +2,9 @@
 
 Draft only. Nothing here has been submitted; the owner decides the name and when to publish.
 
-- **App ID:** `io.github.bagodees.lumafin.mobile` (signed with the same release key as the TV app)
+- **App ID:** `io.github.bagodees.lumafin`, the TV app's own listing. The phone and tablet build is a separate release
+  under the same app (decided October 28): Play gives TVs the TV build and phones and tablets this one. Same release key.
+- **Version codes:** phone builds start at 1,000,000,000 (0.1.0 is 1,000,010,000); TV builds stay below that
 - **Name (to decide):** LumaFin, or LumaFin Mobile next to the TV app
 - **Category:** Video Players & Editors
 - **Devices:** phones, foldables, tablets and Chromebooks; Amazon Fire tablets through the Amazon Appstore
@@ -30,4 +32,4 @@ LumaFin is an independent app built on the open-source Jellyfin project. You nee
 - Feature graphic (1024 x 500)
 - Data safety form: same answers as the TV app (no data collected by LumaFin; the server is the user's own)
 - Privacy policy link: getlumafin.com/privacy
-- Closed testing with 12 testers for 14 days, as with the TV app
+- Add phones and tablets as a form factor of the existing app in Play Console; check there whether its production access covers them or another testing period is needed

@@ -13,9 +13,13 @@ android {
 		minSdk = libs.versions.android.minSdk.get().toInt()
 		targetSdk = libs.versions.android.targetSdk.get().toInt()
 
-		applicationId = "io.github.bagodees.lumafin.mobile"
+		// The same app ID as the TV app: one Play Store and Appstore listing, with a separate build
+		// for phones and tablets (it needs a touchscreen, so TVs never get it, and the TV build needs a TV)
+		applicationId = "io.github.bagodees.lumafin"
 		versionName = "0.1.0"
-		versionCode = 1
+		// Version codes can't repeat across the two builds, so phone builds start at 1,000,000,000;
+		// TV builds stay far below it (1.2.0 is 1,020,099). 0.1.0 is 1,000,010,000.
+		versionCode = phoneVersionCode(versionName!!)
 	}
 
 	buildFeatures {
@@ -52,8 +56,8 @@ android {
 		}
 
 		debug {
-			// Installs next to a release build
-			applicationIdSuffix = ".debug"
+			// Installs next to a release build and next to the TV app's debug build
+			applicationIdSuffix = ".mobile.debug"
 			versionNameSuffix = "-debug"
 		}
 	}
@@ -66,6 +70,11 @@ android {
 	testOptions.unitTests.all {
 		it.useJUnitPlatform()
 	}
+}
+
+fun phoneVersionCode(version: String): Int {
+	val (major, minor, patch) = version.substringBefore('-').split('.').map { it.toInt() }
+	return 1_000_000_000 + major * 1_000_000 + minor * 10_000 + patch * 100
 }
 
 base.archivesName.set("LumaFin-Mobile-v${android.defaultConfig.versionName}")
