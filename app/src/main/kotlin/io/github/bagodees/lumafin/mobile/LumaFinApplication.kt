@@ -5,6 +5,7 @@ import io.github.bagodees.lumafin.mobile.data.AppSettings
 import io.github.bagodees.lumafin.mobile.data.CastManager
 import io.github.bagodees.lumafin.mobile.data.DownloadRepository
 import io.github.bagodees.lumafin.mobile.data.SessionRepository
+import io.github.bagodees.lumafin.mobile.telemetry.CrashServer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,6 +28,8 @@ class LumaFinApplication : Application() {
 	override fun onCreate() {
 		super.onCreate()
 		if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+		// Test builds only: store builds have no crash server address
+		CrashServer.init(this)
 		sessions = SessionRepository(this)
 		settings = AppSettings(this)
 		downloads = DownloadRepository(this, sessions, settings, appScope)

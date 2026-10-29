@@ -21,6 +21,12 @@ android {
 		// TV builds stay far below it (1.2.0 is 1,020,099). The last two digits are the alpha or beta
 		// number and 99 for the final release, so 1.2.0-alpha.1 is 1,001,020,001 and 1.2.0 is 1,001,020,099.
 		versionCode = phoneVersionCode(versionName!!)
+
+		// LumaFin's crash server (its own project, apart from the TV app's). Only GitHub test builds,
+		// made with -Plumafin.testBuild=true, get the address, so store builds send nothing there
+		val testBuild = providers.gradleProperty("lumafin.testBuild").getOrElse("false").toBoolean()
+		val crashDsn = if (testBuild) providers.gradleProperty("lumafin.phoneCrashDsn").getOrElse("") else ""
+		buildConfigField("String", "CRASH_SERVER_DSN", "\"$crashDsn\"")
 	}
 
 	buildFeatures {
