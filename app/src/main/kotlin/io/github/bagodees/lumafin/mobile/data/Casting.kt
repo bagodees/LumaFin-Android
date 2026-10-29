@@ -134,7 +134,9 @@ class CastManager(context: Context, private val sessions: SessionRepository, pri
 	private suspend fun findJellyfinDevices(api: ApiClient): List<CastDevice> = runCatching {
 		val userId = sessions.session.value?.userId ?: return emptyList()
 		api.sessionApi.getSessions(controllableByUserId = userId, activeWithinSeconds = 960).content
-			.filter { it.supportsRemoteControl == true && it.deviceId != api.deviceInfo.id && it.playableMediaTypes.orEmpty().contains(MediaType.VIDEO) }
+			// Only this user's own devices: an admin can control everyone's sessions, which would list
+			// other people's TVs too
+			.filter { it.userId == userId && it.supportsRemoteControl == true && it.deviceId != api.deviceInfo.id && it.playableMediaTypes.orEmpty().contains(MediaType.VIDEO) }
 			.mapNotNull { CastDevice.Jellyfin(it.id ?: return@mapNotNull null, it.deviceName ?: it.client.orEmpty(), it.client) }
 	}.onFailure { Timber.w(it, "Couldn't list Jellyfin devices") }.getOrDefault(emptyList())
 
