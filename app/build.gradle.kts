@@ -80,7 +80,7 @@ fun phoneVersionCode(version: String): Int {
 	return 1_000_000_000 + major * 1_000_000 + minor * 10_000 + patch * 100 + (preRelease ?: 99)
 }
 
-base.archivesName.set("LumaFin-Mobile-v${android.defaultConfig.versionName}")
+base.archivesName.set("LumaFin-Android-v${android.defaultConfig.versionName}")
 
 dependencies {
 	implementation(projects.core)

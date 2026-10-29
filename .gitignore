@@ -1,0 +1,12 @@
+*.iml
+.DS_Store
+local.properties
+
+/.idea
+.gradle
+.kotlin/
+build/
+captures/
+
+# Claude Code local session state
+.claude/
