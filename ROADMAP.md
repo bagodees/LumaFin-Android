@@ -23,7 +23,7 @@ started there on October 28, 2026 and moved here the same day so each app has it
 
 ## 1.2 (alpha)
 
-Status: In progress. Alpha 1 and alpha 2 are published as GitHub pre-releases.
+Status: In progress. Alphas 1 to 3 are published as GitHub pre-releases.
 
 1. [x] Shell: sign-in (server, users, password, Quick Connect), adaptive navigation, first Home rows. Checked October 28 on the foldable emulator (folded, unfolded, folding mid-use keeps the open tab) and a Fire HD 10 stand-in (Android 9, no Google services, portrait and landscape)
 2. [x] Home and libraries: the TV app's rows, library grids (A-Z, Recently Added, Newest, Top Rated), My Requests, Trending and Upcoming; Seerr and Top Rated logic in the shared `core` module
