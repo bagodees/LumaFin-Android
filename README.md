@@ -11,6 +11,19 @@ window, so it works on phones, folded and unfolded foldables, and tablets in eit
 - Playback with picture-in-picture and a tabletop layout on half-open foldables
 - Downloads for offline viewing, and Play on for Chromecast or another Jellyfin app on your account
 
+## Screenshots
+
+| Home | Movie | Show |
+| --- | --- | --- |
+| <img alt="LumaFin Home with Continue Watching, Recently Added Movies and Recently Added Shows rows and a bottom navigation bar" src="docs/screenshots/home.png" /> | <img alt="Sprite Fright page with artwork, Play, Play on, Download and Mark watched buttons, the description and cast" src="docs/screenshots/movie-details.png" /> | <img alt="Pioneer One show page with Resume, Play on and Mark watched, a Season 1 chip, Download season and the episode list" src="docs/screenshots/show-details.png" /> |
+
+| Episodes and cast | Library | Settings |
+| --- | --- | --- |
+| <img alt="Pioneer One episode list with thumbnails, runtimes and descriptions, and a Cast row" src="docs/screenshots/episodes.png" /> | <img alt="Demo-Movies library with A to Z, Recently Added, Newest and Top Rated sorting and a grid of posters" src="docs/screenshots/library-grid.png" /> | <img alt="Settings with the signed-in account and switches for the next episode, Seerr rows and Wi-Fi only downloads" src="docs/screenshots/settings.png" /> |
+
+<sub>Screenshots show Creative Commons films from Blender Studio ([studio.blender.org](https://studio.blender.org/films/)),
+CC BY, and Pioneer One by Josh Bernhard and Bracey Smith, Creative Commons.</sub>
+
 It is in alpha. Test builds are published as pre-releases on the
 [releases page](https://github.com/bagodees/LumaFin-Android/releases).
 
